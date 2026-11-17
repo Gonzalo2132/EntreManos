@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f5ef">
+    <title>EntreManos — Tu barrio comparte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main id="login-screen" class="login-screen">
+      <section class="login-story" aria-label="Acerca de EntreManos">
+        <a class="brand brand-light" href="#" aria-label="EntreManos, inicio">
+          <span class="brand-mark" aria-hidden="true">e</span>
+          <span>entre<span class="brand-accent">manos</span></span>
+        </a>
+        <div class="story-copy">
+          <span class="eyebrow eyebrow-light"><span class="live-dot"></span> HECHO PARA ESTAR CERCA</span>
+          <h1>Lo que tu vecino tiene,<br>te puede <span>servir a ti.</span></h1>
+          <p>Un taladro que se usa una vez al año no tiene por qué quedarse guardado. Conectá con tu barrio y compartí lo que ya tenés.</p>
+        </div>
+        <div class="story-bottom">
+          <div class="avatar-stack" aria-hidden="true"><span>LM</span><span>JC</span><span>AF</span><span>+</span></div>
+          <p><strong>Una comunidad, más soluciones.</strong><br>Un pequeño préstamo puede hacer una gran diferencia.</p>
+        </div>
+        <span class="story-decoration decoration-one" aria-hidden="true">↗</span>
+        <span class="story-decoration decoration-two" aria-hidden="true">✳</span>
+      </section>
+      <section class="login-panel">
+        <div class="login-mobile-brand brand">
+          <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
+        </div>
+        <div class="login-card">
+          <span class="eyebrow">TU COMUNIDAD, MÁS CERCA</span>
+          <h2 id="auth-title">Entrá a tu barrio</h2>
+          <p id="auth-intro" class="login-intro">Iniciá sesión para ver qué hay cerca.</p>
+          <form id="login-form">
+            <div id="name-field" hidden>
+              <label for="login-name">¿Cómo te llamás?</label>
+              <input id="login-name" name="name" type="text" placeholder="Tu nombre" autocomplete="name" maxlength="32">
+            </div>
+            <div id="neighborhood-field" hidden>
+              <label for="neighborhood-select">¿A qué vecindario querés unirte?</label>
+              <select id="neighborhood-select" name="neighborhood_id">
+                <option value="">Elegí un vecindario</option>
+                <option value="create">＋ Crear un vecindario nuevo</option>
+              </select>
+              <div id="new-neighborhood-field" hidden>
+                <label for="neighborhood-name">Nombre del nuevo vecindario</label>
+                <input id="neighborhood-name" name="neighborhood_name" type="text" placeholder="Ej. Villa del Parque" maxlength="60">
+              </div>
+            </div>
+            <label for="login-email">Correo electrónico</label>
+            <input id="login-email" name="email" type="email" placeholder="vos@ejemplo.com" autocomplete="email" required maxlength="254">
+            <label for="login-password">Contraseña</label>
+            <input id="login-password" name="password" type="password" placeholder="Al menos 8 caracteres" autocomplete="current-password" required minlength="8" maxlength="72">
+            <p id="login-error" class="form-error" role="alert"></p>
+            <p id="auth-message" class="auth-message" role="status" hidden></p>
+            <button id="auth-submit" class="button button-dark login-submit" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
+          </form>
+          <p class="auth-switch"><span id="auth-switch-prompt">¿Todavía no tenés cuenta?</span> <button id="auth-mode-toggle" type="button">Registrate</button></p>
+        </div>
+        <p class="login-footnote">Una comunidad cerrada, segura y hecha entre todos.</p>
+      </section>
+    </main>
+
+    <div id="app-screen" class="app-screen" hidden>
+      <aside class="sidebar">
+        <a class="brand sidebar-brand" href="#" aria-label="EntreManos, inicio">
+          <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
+        </a>
+        <div class="community-chip"><span class="community-icon" aria-hidden="true">⌂</span><span><strong>Vecindario</strong><small id="community-name">—</small></span><span class="verified" aria-label="Comunidad verificada">✓</span></div>
+        <span class="nav-label">TU ESPACIO</span>
+        <nav class="side-nav" aria-label="Navegación principal">
+          <a class="nav-item active" href="#inicio"><span aria-hidden="true">▦</span> Explorar <span class="nav-arrow">↗</span></a>
+          <a class="nav-item" href="#publicar" id="nav-publish"><span aria-hidden="true">＋</span> Publicar herramienta</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="help-card"><span class="help-spark" aria-hidden="true">✳</span><strong>Compartir es cuidar</strong><p>Una herramienta compartida es una compra menos para alguien.</p><span class="help-flower" aria-hidden="true">✿</span></div>
+          <button id="logout-button" class="profile-button" type="button"><span class="profile-avatar" id="profile-avatar">G</span><span class="profile-copy"><strong id="profile-name">Vecino</strong><small>Mi cuenta</small></span><span class="profile-more">···</span></button>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <header class="topbar"><span class="mobile-brand brand"><span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span></span><span class="topbar-community"><span class="topbar-dot"></span> <span id="topbar-community-name">—</span> <span class="verified">✓</span></span><span class="topbar-note">El barrio que comparte, crece.</span></header>
+        <main class="content" id="inicio">
+          <section class="welcome-row">
+            <div><p class="welcome-date"><span class="welcome-spark" aria-hidden="true">✳</span> TU COMUNIDAD ESTÁ ACTIVA</p><h1>Hola, <span id="welcome-name">vecino</span> <span class="wave" aria-hidden="true">✳</span></h1><p class="welcome-subtitle">¿Qué necesitás para tu próximo proyecto?</p></div>
+            <button class="button button-green publish-button" type="button" id="open-publish"><span aria-hidden="true">＋</span> Publicar herramienta</button>
+          </section>
+
+          <section class="impact-strip" aria-label="Impacto de la comunidad">
+            <div class="impact-icon" aria-hidden="true">↗</div><div class="impact-text"><strong id="impact-title">Compartir nos hace mejores vecinos.</strong><span id="impact-description">Ya hay personas de tu barrio listas para dar una mano.</span></div><div class="impact-stat"><strong id="tools-count">12</strong><span>herramientas<br>disponibles</span></div><div class="impact-divider"></div><div class="impact-stat"><strong id="neighbors-count">8</strong><span>vecinos<br>compartiendo</span></div><span class="impact-spark" aria-hidden="true">✳</span>
+          </section>
+
+          <section class="catalog-section" aria-labelledby="catalog-title">
+            <div class="section-heading"><div><p class="section-kicker">EN TU BARRIO</p><h2 id="catalog-title">Cosas que podés pedir</h2></div><label class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="Buscar herramienta..." aria-label="Buscar herramientas"></label></div>
+            <div class="filter-row" id="filter-row" aria-label="Filtrar por categoría">
+              <button class="filter-chip selected" type="button" data-category="Todas">Todas <span class="chip-count" id="count-all">0</span></button>
+              <button class="filter-chip" type="button" data-category="Herramientas">⌁ Herramientas</button>
+              <button class="filter-chip" type="button" data-category="Jardín">✿ Jardín</button>
+              <button class="filter-chip" type="button" data-category="Hogar">⌂ Hogar</button>
+              <button class="filter-chip" type="button" data-category="Aventura">↗ Aventura</button>
+              <span class="results-label" id="results-label"></span>
+            </div>
+            <div id="tool-grid" class="tool-grid" aria-live="polite"></div>
+            <div id="empty-state" class="empty-state" hidden><span aria-hidden="true">⌕</span><h3>No encontramos esa herramienta</h3><p>Probá con otra búsqueda o cambiá la categoría.</p><button class="text-button" id="clear-filters" type="button">Limpiar filtros</button></div>
+          </section>
+          <footer class="page-footer"><span>entre<span class="brand-accent">manos</span> <span>© 2026</span></span><span>Un barrio mejor se construye compartiendo. <b>✳</b></span></footer>
+        </main>
+      </div>
+    </div>
+
+    <dialog id="publish-dialog" class="app-dialog">
+      <form id="publish-form" class="dialog-card">
+        <button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar">×</button>
+        <p class="section-kicker">COMPARTÍ CON TU BARRIO</p><h2>Publicá una herramienta</h2><p class="dialog-intro">Contale a tus vecinos qué tenés para prestar.</p>
+        <label for="tool-name">¿Qué vas a prestar?</label><input id="tool-name" name="name" type="text" placeholder="Ej. Taladro percutor" required maxlength="50">
+        <div class="form-two-col"><div><label for="tool-category">Categoría</label><select id="tool-category" name="category"><option>Herramientas</option><option>Jardín</option><option>Hogar</option><option>Aventura</option></select></div><div><label for="tool-emoji">Elegí un ícono</label><select id="tool-emoji" name="emoji"><option value="🔧">🔧 Herramienta</option><option value="🌿">🌿 Jardín</option><option value="🏠">🏠 Hogar</option><option value="🎒">🎒 Aventura</option><option value="🪜">🪜 Escalera</option><option value="🧰">🧰 Caja de herramientas</option></select></div></div>
+        <label for="tool-description">Un detalle para tus vecinos <span class="optional">(opcional)</span></label><textarea id="tool-description" name="description" rows="3" placeholder="Contá cómo coordinar o algún detalle útil..."></textarea>
+        <button class="button button-green dialog-submit" type="submit">Publicar en mi comunidad <span aria-hidden="true">→</span></button>
+      </form>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
