@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EntreManos
 
 Demo de una comunidad vecinal cerrada para compartir herramientas y pedirlas prestadas. La idea resuelve algo cotidiano: comprar o guardar una herramienta que otra persona del barrio ya tiene.
@@ -24,3 +25,6 @@ Las cuentas, sus vecindarios y las contraseñas cifradas se guardan en MySQL. La
 - **Próxima etapa:** guardar publicaciones en el servidor y agregar chat, aprobación de solicitudes y perfiles verificados.
 
 > **Importante:** configurá credenciales seguras de MySQL si publicás la aplicación fuera de un entorno local.
+=======
+# EntreManos
+>>>>>>> EntreMano/main
