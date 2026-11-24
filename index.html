@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <button class="credits-trigger" type="button" data-open-credits aria-label="Ver quién realizó el proyecto" title="Créditos">ⓘ</button>
     <main id="login-screen" class="login-screen">
       <section class="login-story" aria-label="Acerca de EntreManos">
-        <a class="brand brand-light" href="#" aria-label="EntreManos, inicio">
-          <span class="brand-mark" aria-hidden="true">e</span>
-          <span>entre<span class="brand-accent">manos</span></span>
-        </a>
+        <div class="brand-row">
+          <a class="brand brand-light" href="#" aria-label="EntreManos, inicio">
+            <span class="brand-mark" aria-hidden="true">e</span>
+            <span>entre<span class="brand-accent">manos</span></span>
+          </a>
+        </div>
         <div class="story-copy">
           <span class="eyebrow eyebrow-light"><span class="live-dot"></span> HECHO PARA ESTAR CERCA</span>
           <h1>Lo que tu vecino tiene,<br>te puede <span>servir a ti.</span></h1>
@@ -27,8 +30,10 @@
         <span class="story-decoration decoration-two" aria-hidden="true">✳</span>
       </section>
       <section class="login-panel">
-        <div class="login-mobile-brand brand">
-          <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
+        <div class="login-mobile-row">
+          <div class="login-mobile-brand brand">
+            <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
+          </div>
         </div>
         <div class="login-card">
           <span class="eyebrow">TU COMUNIDAD, MÁS CERCA</span>
@@ -66,9 +71,11 @@
 
     <div id="app-screen" class="app-screen" hidden>
       <aside class="sidebar">
-        <a class="brand sidebar-brand" href="#" aria-label="EntreManos, inicio">
-          <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
-        </a>
+        <div class="brand-row sidebar-brand-row">
+          <a class="brand sidebar-brand" href="#" aria-label="EntreManos, inicio">
+            <span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span>
+          </a>
+        </div>
         <div class="community-chip"><span class="community-icon" aria-hidden="true">⌂</span><span><strong>Vecindario</strong><small id="community-name">—</small></span><span class="verified" aria-label="Comunidad verificada">✓</span></div>
         <span class="nav-label">TU ESPACIO</span>
         <nav class="side-nav" aria-label="Navegación principal">
@@ -82,7 +89,7 @@
       </aside>
 
       <div class="main-column">
-        <header class="topbar"><span class="mobile-brand brand"><span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span></span><span class="topbar-community"><span class="topbar-dot"></span> <span id="topbar-community-name">—</span> <span class="verified">✓</span></span><span class="topbar-note">El barrio que comparte, crece.</span></header>
+        <header class="topbar"><div class="brand-row topbar-brand-row"><span class="mobile-brand brand"><span class="brand-mark" aria-hidden="true">e</span><span>entre<span class="brand-accent">manos</span></span></span></div><span class="topbar-community"><span class="topbar-dot"></span> <span id="topbar-community-name">—</span> <span class="verified">✓</span></span><span class="topbar-note">El barrio que comparte, crece.</span></header>
         <main class="content" id="inicio">
           <section class="welcome-row">
             <div><p class="welcome-date"><span class="welcome-spark" aria-hidden="true">✳</span> TU COMUNIDAD ESTÁ ACTIVA</p><h1>Hola, <span id="welcome-name">vecino</span> <span class="wave" aria-hidden="true">✳</span></h1><p class="welcome-subtitle">¿Qué necesitás para tu próximo proyecto?</p></div>
@@ -122,6 +129,25 @@
         <label for="tool-description">Un detalle para tus vecinos <span class="optional">(opcional)</span></label><textarea id="tool-description" name="description" rows="3" placeholder="Contá cómo coordinar o algún detalle útil..."></textarea>
         <button class="button button-green dialog-submit" type="submit">Publicar en mi comunidad <span aria-hidden="true">→</span></button>
       </form>
+    </dialog>
+    <dialog id="credits-dialog" class="app-dialog credits-dialog">
+      <section class="dialog-card" aria-labelledby="credits-title">
+        <button class="dialog-close" type="button" data-close-credits aria-label="Cerrar">×</button>
+        <div class="credits-heading">
+          <span class="credits-mark" aria-hidden="true">e</span>
+          <div>
+            <p class="section-kicker">CRÉDITOS DEL PROYECTO</p>
+            <h2 id="credits-title">EntreManos</h2>
+          </div>
+        </div>
+        <p class="credits-intro">Proyecto académico desarrollado para la comunidad.</p>
+        <div class="credits-details">
+          <p><strong>Realizado por</strong><span>Gonzalo Jesús Arreseygor</span></p>
+          <p><strong>Para el docente</strong><span>Hernán Delfor Castro</span></p>
+          <p><strong>Carrera</strong><span>Tecnicatura en Análisis y Desarrollo de Sistemas</span></p>
+          <p><strong>Instituto</strong><span>Gaspar Benavento</span></p>
+        </div>
+      </section>
     </dialog>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <script src="script.js"></script>

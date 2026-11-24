@@ -79,7 +79,9 @@ button { cursor: pointer; }
 /* Neighborhood dashboard */
 .app-screen { min-height: 100vh; }
 .sidebar { position: fixed; z-index: 2; display: flex; width: 250px; height: 100vh; flex-direction: column; border-right: 1px solid #dfded4; background: #f9f8f3; padding: 25px 17px 17px; }
-.sidebar-brand { margin: 0 0 33px 7px; }
+.brand-row { display: flex; align-items: center; gap: 11px; }
+.sidebar-brand-row { margin: 0 0 33px 48px; }
+.sidebar-brand { margin: 0; }
 .community-chip { display: flex; align-items: center; gap: 10px; border: 1px solid #e1dfd4; border-radius: 5px; background: #fbfaf6; padding: 11px 9px; }
 .community-icon { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 4px; background: #e9e7d9; color: #677452; font-size: 19px; }
 .community-chip strong, .community-chip small, .profile-copy strong, .profile-copy small { display: block; }
@@ -179,6 +181,17 @@ button { cursor: pointer; }
 .page-footer > span:first-child { color: #59694b; font-weight: 700; }
 .page-footer > span:first-child > span:last-child { color: #a2aaa1; font-weight: 400; }
 .page-footer b { color: #82896c; }
+.credits-trigger { position: fixed; z-index: 6; top: 16px; left: 16px; display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid rgba(86,106,72,.25); border-radius: 50%; background: #fbfaf6; box-shadow: 0 3px 12px rgba(34,40,32,.12); color: #536847; font-size: 18px; transition: background .2s, transform .2s, box-shadow .2s; }
+.credits-trigger:hover, .credits-trigger:focus-visible { transform: translateY(-1px); border-color: #536847; background: #e9ebdf; box-shadow: 0 5px 16px rgba(34,40,32,.17); }
+.credits-heading { display: flex; align-items: center; gap: 15px; margin: 0 28px 0 0; }
+.credits-mark { display: grid; width: 52px; height: 52px; flex: 0 0 auto; place-items: center; border-radius: 16px 16px 16px 5px; background: #405439; color: #f4f1e7; font-family: var(--serif); font-size: 34px; font-style: italic; }
+.credits-heading .section-kicker { margin: 0 0 5px; }
+.credits-dialog .dialog-card h2 { font-size: 30px; letter-spacing: -1px; }
+.credits-intro { margin: 21px 0 18px; color: #77786e; font-size: 12px; line-height: 1.6; }
+.credits-details { display: grid; border-top: 1px solid #e4e3d8; }
+.credits-details p { display: grid; gap: 5px; margin: 0; border-bottom: 1px solid #e4e3d8; padding: 12px 0; color: #41463b; font-size: 12px; line-height: 1.5; }
+.credits-details strong { color: #818174; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+.login-mobile-row, .topbar-brand-row { display: none; }
 
 /* Dialog and notifications */
 .app-dialog { width: min(460px, calc(100% - 28px)); max-width: none; max-height: calc(100% - 28px); border: 1px solid #dfded4; border-radius: 6px; padding: 0; box-shadow: 0 20px 70px rgba(36,39,29,.2); }
@@ -203,11 +216,14 @@ button { cursor: pointer; }
   .login-screen { grid-template-columns: 1fr; }
   .login-story { display: none; }
   .login-panel { min-height: 100vh; justify-content: center; padding: 30px 24px; }
+  .login-mobile-row { display: flex; align-items: center; gap: 10px; margin-bottom: 50px; }
   .login-mobile-brand { display: inline-flex; margin-bottom: 50px; }
+  .login-mobile-row .login-mobile-brand { margin-bottom: 0; }
   .login-footnote { margin-top: 36px; }
   .sidebar { display: none; }
   .main-column { margin-left: 0; }
   .topbar { height: 55px; justify-content: space-between; gap: 10px; padding: 0 20px; }
+  .topbar-brand-row { display: flex; margin-left: 42px; }
   .mobile-brand { display: inline-flex; font-size: 17px; }
   .mobile-brand .brand-mark { width: 27px; height: 27px; border-radius: 9px 9px 9px 3px; font-size: 20px; }
   .topbar-note { display: none; }

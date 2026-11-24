@@ -30,6 +30,7 @@
   const searchInput = document.querySelector("#search-input");
   const emptyState = document.querySelector("#empty-state");
   const dialog = document.querySelector("#publish-dialog");
+  const creditsDialog = document.querySelector("#credits-dialog");
   const toast = document.querySelector("#toast");
   // Estos valores recuerdan el filtro elegido y el estado de la cuenta actual.
   let activeCategory = "Todas";
@@ -335,6 +336,13 @@
   document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => dialog.close()));
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
+  });
+  document.querySelectorAll("[data-open-credits]").forEach((button) => {
+    button.addEventListener("click", () => creditsDialog.showModal());
+  });
+  document.querySelector("[data-close-credits]").addEventListener("click", () => creditsDialog.close());
+  creditsDialog.addEventListener("click", (event) => {
+    if (event.target === creditsDialog) creditsDialog.close();
   });
 
   // Al publicar, agrego la herramienta al vecindario de la persona y la guardo en el navegador.
