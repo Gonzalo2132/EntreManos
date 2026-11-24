@@ -167,9 +167,9 @@ button { cursor: pointer; }
 .availability { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 4px; color: #60704e; font-size: 8px; font-weight: 600; }
 .availability::before { width: 5px; height: 5px; border-radius: 50%; background: #909b73; content: ""; }
 .tool-description { overflow: hidden; min-height: 30px; margin: 0 0 11px; color: #717267; font-size: 10px; line-height: 1.55; text-overflow: ellipsis; white-space: nowrap; }
-.request-button { display: flex; width: 100%; min-height: 33px; align-items: center; justify-content: center; border: 1px solid #d8d9cb; border-radius: 3px; background: #f0f0e7; color: #4d5d40; font-size: 9px; font-weight: 700; transition: .2s; }
-.request-button:hover { border-color: #9ea58b; background: #e9ebdf; }
-.request-button.requested { border-color: #d8d9cb; background: #e8eadf; color: #68735b; cursor: default; }
+.contact-button { display: flex; width: 100%; min-height: 33px; align-items: center; justify-content: center; border: 1px solid #d8d9cb; border-radius: 3px; background: #f0f0e7; color: #4d5d40; font-size: 9px; font-weight: 700; text-decoration: none; transition: .2s; }
+.contact-button:hover { border-color: #9ea58b; background: #e9ebdf; }
+.contact-button.unavailable { background: #f5f4ed; color: #77786d; cursor: default; }
 .empty-state { padding: 40px 10px; color: #77786d; text-align: center; }
 .empty-state > span { color: #788365; font-size: 30px; }
 .empty-state h3 { margin: 8px 0; color: #41483c; font-family: var(--serif); font-size: 18px; font-weight: 500; }

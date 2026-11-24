@@ -117,6 +117,8 @@
         <p class="section-kicker">COMPARTÍ CON TU BARRIO</p><h2>Publicá una herramienta</h2><p class="dialog-intro">Contale a tus vecinos qué tenés para prestar.</p>
         <label for="tool-name">¿Qué vas a prestar?</label><input id="tool-name" name="name" type="text" placeholder="Ej. Taladro percutor" required maxlength="50">
         <div class="form-two-col"><div><label for="tool-category">Categoría</label><select id="tool-category" name="category"><option>Herramientas</option><option>Jardín</option><option>Hogar</option><option>Aventura</option></select></div><div><label for="tool-emoji">Elegí un ícono</label><select id="tool-emoji" name="emoji"><option value="🔧">🔧 Herramienta</option><option value="🌿">🌿 Jardín</option><option value="🏠">🏠 Hogar</option><option value="🎒">🎒 Aventura</option><option value="🪜">🪜 Escalera</option><option value="🧰">🧰 Caja de herramientas</option></select></div></div>
+        <label for="tool-whatsapp">Tu número de WhatsApp</label><input id="tool-whatsapp" name="whatsapp" type="tel" placeholder="+54 9 ... " autocomplete="tel" required maxlength="24" pattern="\+?[0-9 \(\)\-]{8,24}" title="Incluí el código de país. Por ejemplo, en Argentina se usa +54 9 y el número.">
+        <p class="dialog-intro">Este número aparecerá en tu publicación para que puedan contactarte.</p>
         <label for="tool-description">Un detalle para tus vecinos <span class="optional">(opcional)</span></label><textarea id="tool-description" name="description" rows="3" placeholder="Contá cómo coordinar o algún detalle útil..."></textarea>
         <button class="button button-green dialog-submit" type="submit">Publicar en mi comunidad <span aria-hidden="true">→</span></button>
       </form>

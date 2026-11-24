@@ -7,7 +7,6 @@
   // Uso estas claves para encontrar los datos guardados en el navegador.
   const KEYS = {
     tools: "entremanos-tools",
-    requests: "entremanos-requests",
     saved: "entremanos-saved"
   };
 
@@ -98,7 +97,7 @@
     mostrarHerramientas();
   }
 
-  function crearTarjetaDeHerramienta(tool, requests, saved) {
+  function crearTarjetaDeHerramienta(tool, saved) {
     // Armo cada tarjeta con elementos HTML para mostrar una herramienta y sus acciones.
     const card = document.createElement("article");
     card.className = "tool-card";
@@ -148,13 +147,20 @@
     const description = document.createElement("p");
     description.className = "tool-description";
     description.textContent = tool.description || "Coordiná el préstamo directamente con tu vecino.";
-    const requestButton = document.createElement("button");
-    requestButton.className = `request-button${requests.includes(tool.id) || isOwnTool ? " requested" : ""}`;
-    requestButton.type = "button";
-    requestButton.disabled = requests.includes(tool.id) || isOwnTool;
-    requestButton.textContent = isOwnTool ? "Tu publicación" : requests.includes(tool.id) ? "✓  Solicitud enviada" : "Pedir prestado  →";
-    if (!requests.includes(tool.id) && !isOwnTool) requestButton.addEventListener("click", () => solicitarPrestamo(tool));
-    body.append(titleRow, meta, description, requestButton);
+    // Abro WhatsApp con un mensaje listo; no marco la publicación como solicitud enviada.
+    const contacto = document.createElement(tool.whatsappPhone && !isOwnTool ? "a" : "span");
+    contacto.className = `contact-button${tool.whatsappPhone && !isOwnTool ? "" : " unavailable"}`;
+    if (tool.whatsappPhone && !isOwnTool) {
+      const mensaje = `Hola ${tool.owner}, me interesa pedir prestado ${tool.name}. ¿Sigue disponible?`;
+      contacto.href = `https://wa.me/${tool.whatsappPhone}?text=${encodeURIComponent(mensaje)}`;
+      contacto.target = "_blank";
+      contacto.rel = "noopener noreferrer";
+      contacto.textContent = "Consultar por WhatsApp ↗";
+      contacto.setAttribute("aria-label", `Consultar por WhatsApp a ${tool.owner}`);
+    } else {
+      contacto.textContent = isOwnTool ? "Tu publicación" : "WhatsApp no disponible";
+    }
+    body.append(titleRow, meta, description, contacto);
     card.append(art, body);
     return card;
   }
@@ -168,7 +174,6 @@
     );
     // Después aplico la búsqueda y los filtros que eligió la persona.
     const query = searchInput.value.trim().toLocaleLowerCase("es");
-    const requests = leerLista(KEYS.requests, []);
     const saved = leerLista(KEYS.saved, []);
     const filtered = tools.filter((tool) => {
       const matchesCategory = activeCategory === "Todas" || tool.category === activeCategory;
@@ -177,7 +182,7 @@
     });
 
     // Reemplazo las tarjetas anteriores por las que coinciden con la búsqueda y el filtro.
-    toolGrid.replaceChildren(...filtered.map((tool) => crearTarjetaDeHerramienta(tool, requests, saved)));
+    toolGrid.replaceChildren(...filtered.map((tool) => crearTarjetaDeHerramienta(tool, saved)));
     emptyState.hidden = filtered.length !== 0;
     document.querySelector("#results-label").textContent = `${filtered.length} ${filtered.length === 1 ? "resultado" : "resultados"}`;
     // Actualizo los contadores con los datos del vecindario que estoy viendo.
@@ -193,16 +198,6 @@
     toast.classList.add("visible");
     window.clearTimeout(toastTimer);
     toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 3200);
-  }
-
-  function solicitarPrestamo(tool) {
-    // Evito enviar dos veces el pedido y guardo la solicitud en este navegador.
-    const requests = leerLista(KEYS.requests, []);
-    if (requests.includes(tool.id)) return;
-    requests.push(tool.id);
-    if (!guardarLista(KEYS.requests, requests)) return;
-    mostrarHerramientas();
-    mostrarAviso(`¡Solicitud enviada! Coordiná el préstamo con ${tool.owner}.`);
   }
 
   function alternarGuardado(id) {
@@ -348,6 +343,14 @@
     const formData = new FormData(event.currentTarget);
     const session = obtenerSesion();
     if (!session) return;
+    // Quito espacios y signos para que WhatsApp reciba solo el número internacional.
+    const whatsappPhone = String(formData.get("whatsapp")).replace(/\D/g, "");
+    if (whatsappPhone.length < 8 || whatsappPhone.length > 15) {
+      document.querySelector("#tool-whatsapp").setCustomValidity("Ingresá el número con código de país, entre 8 y 15 dígitos.");
+      document.querySelector("#tool-whatsapp").reportValidity();
+      document.querySelector("#tool-whatsapp").setCustomValidity("");
+      return;
+    }
     const tools = obtenerHerramientas();
     tools.unshift({
       id: `tool-${Date.now()}`,
@@ -357,6 +360,7 @@
       owner: `${session.name.split(/\s+/)[0]} (vos)`,
       ownerId: session.id,
       communityId: session.neighborhood_id,
+      whatsappPhone,
       location: `En tu barrio · ${session.neighborhood_name}`,
       description: String(formData.get("description")).trim()
     });

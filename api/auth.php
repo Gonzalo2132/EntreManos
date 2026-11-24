@@ -80,7 +80,7 @@ try {
     );
 
     if ($accion === 'neighborhoods') {
-        responder(200, ['neighborhoods' => $pdo->query('SELECT id, name FROM neighborhoods ORDER BY name')->fetchAll()]);
+        responder(200, ['neighborhoods' => $pdo->query('SELECT id, nombre AS name FROM vecindarios ORDER BY nombre')->fetchAll()]);
     }
 
     $email = strtolower(trim((string) ($entrada['email'] ?? '')));
@@ -117,11 +117,11 @@ try {
         try {
             if ($crearVecindario) {
                 $mensajeDuplicado = 'Ya existe un vecindario con ese nombre. Elegilo de la lista.';
-                $consulta = $pdo->prepare('INSERT INTO neighborhoods (name) VALUES (:name)');
+                $consulta = $pdo->prepare('INSERT INTO vecindarios (nombre) VALUES (:name)');
                 $consulta->execute(['name' => $nombreVecindario]);
                 $vecindario = ['id' => (int) $pdo->lastInsertId(), 'name' => $nombreVecindario];
             } else {
-                $consulta = $pdo->prepare('SELECT id, name FROM neighborhoods WHERE id = :id');
+                $consulta = $pdo->prepare('SELECT id, nombre AS name FROM vecindarios WHERE id = :id');
                 $consulta->execute(['id' => $idVecindario]);
                 $vecindario = $consulta->fetch();
                 if (!$vecindario) {
@@ -131,7 +131,7 @@ try {
             }
 
             $consulta = $pdo->prepare(
-                'INSERT INTO users (name, email, password_hash, neighborhood_id)
+                'INSERT INTO usuarios (nombre, correo, contrasena_cifrada, vecindario_id)
                  VALUES (:name, :email, :password_hash, :neighborhood_id)'
             );
             $consulta->execute([
@@ -152,13 +152,13 @@ try {
         responder(201, ['ok' => true, 'neighborhood' => $vecindario]);
     }
 
-    $columna = $accion === 'me' ? 'u.id' : 'u.email';
+    $columna = $accion === 'me' ? 'u.id' : 'u.correo';
     $valor = $accion === 'me' ? (int) $_SESSION['user']['id'] : $email;
     $campos = $accion === 'me'
-        ? 'u.id, u.name, u.email, u.neighborhood_id, n.name AS neighborhood_name'
-        : 'u.id, u.name, u.email, u.password_hash, u.neighborhood_id, n.name AS neighborhood_name';
+        ? 'u.id, u.nombre AS name, u.correo AS email, u.vecindario_id AS neighborhood_id, v.nombre AS neighborhood_name'
+        : 'u.id, u.nombre AS name, u.correo AS email, u.contrasena_cifrada AS password_hash, u.vecindario_id AS neighborhood_id, v.nombre AS neighborhood_name';
     $consulta = $pdo->prepare(
-        "SELECT $campos FROM users u JOIN neighborhoods n ON n.id = u.neighborhood_id WHERE $columna = :valor"
+        "SELECT $campos FROM usuarios u JOIN vecindarios v ON v.id = u.vecindario_id WHERE $columna = :valor"
     );
     $consulta->execute(['valor' => $valor]);
     $user = $consulta->fetch();
