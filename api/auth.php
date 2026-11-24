@@ -4,23 +4,23 @@ declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 $pdo = null;
 
-$isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+$segura = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 session_set_cookie_params([
     'httponly' => true,
-    'secure' => $isHttps,
+    'secure' => $segura,
     'samesite' => 'Lax',
     'path' => '/',
 ]);
 session_start();
 
-function respond(int $status, array $data): void
+function responder(int $status, array $data): void
 {
     http_response_code($status);
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-function publicUser(array $user): array
+function obtenerUsuarioPublico(array $user): array
 {
     return [
         'id' => (int) $user['id'],
@@ -33,48 +33,45 @@ function publicUser(array $user): array
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        respond(405, ['error' => 'Método no permitido.']);
+        responder(405, ['error' => 'Método no permitido.']);
     }
 
-    $input = json_decode(file_get_contents('php://input'), true);
-    if (!is_array($input)) {
-        respond(400, ['error' => 'La solicitud no tiene un formato válido.']);
+    $entrada = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($entrada)) {
+        responder(400, ['error' => 'La solicitud no tiene un formato válido.']);
     }
 
-    $action = $input['action'] ?? '';
-    if ($action === 'logout') {
+    $accion = $entrada['action'] ?? '';
+    if ($accion === 'logout') {
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
             setcookie(session_name(), '', [
                 'expires' => time() - 42000,
-                'path' => $params['path'],
-                'domain' => $params['domain'],
-                'secure' => $params['secure'],
-                'httponly' => $params['httponly'],
+                'path' => '/',
+                'secure' => $segura,
+                'httponly' => true,
                 'samesite' => 'Lax',
             ]);
         }
         session_destroy();
-        respond(200, ['ok' => true]);
+        responder(200, ['ok' => true]);
     }
 
-    if (!in_array($action, ['me', 'neighborhoods', 'register', 'login'], true)) {
-        respond(400, ['error' => 'La operación solicitada no es válida.']);
+    if (!in_array($accion, ['me', 'neighborhoods', 'register', 'login'], true)) {
+        responder(400, ['error' => 'La operación solicitada no es válida.']);
+    }
+    if ($accion === 'me' && empty($_SESSION['user']['id'])) {
+        responder(200, ['user' => null]);
     }
 
-    if ($action === 'me' && empty($_SESSION['user']['id'])) {
-        respond(200, ['user' => null]);
-    }
-
-    $host = getenv('DB_HOST') ?: '127.0.0.1';
-    $database = getenv('DB_NAME') ?: 'entremanos';
-    $username = getenv('DB_USER') ?: 'root';
-    $password = getenv('DB_PASSWORD') ?: '';
+    $servidor = getenv('DB_HOST') ?: '127.0.0.1';
+    $base = getenv('DB_NAME') ?: 'entremanos';
+    $usuario = getenv('DB_USER') ?: 'root';
+    $clave = getenv('DB_PASSWORD') ?: '';
     $pdo = new PDO(
-        "mysql:host={$host};dbname={$database};charset=utf8mb4",
-        $username,
-        $password,
+        "mysql:host=$servidor;dbname=$base;charset=utf8mb4",
+        $usuario,
+        $clave,
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -82,122 +79,107 @@ try {
         ]
     );
 
-    if ($action === 'neighborhoods') {
-        $statement = $pdo->query('SELECT id, name FROM neighborhoods ORDER BY name');
-        respond(200, ['neighborhoods' => $statement->fetchAll()]);
+    if ($accion === 'neighborhoods') {
+        responder(200, ['neighborhoods' => $pdo->query('SELECT id, name FROM neighborhoods ORDER BY name')->fetchAll()]);
     }
 
-    if ($action === 'me') {
-        $statement = $pdo->prepare(
-            'SELECT u.id, u.name, u.email, u.neighborhood_id, n.name AS neighborhood_name
-             FROM users u
-             JOIN neighborhoods n ON n.id = u.neighborhood_id
-             WHERE u.id = :id'
-        );
-        $statement->execute(['id' => (int) $_SESSION['user']['id']]);
-        $user = $statement->fetch();
-        if (!$user) {
-            $_SESSION = [];
-            respond(200, ['user' => null]);
+    $email = strtolower(trim((string) ($entrada['email'] ?? '')));
+    $contrasena = (string) ($entrada['password'] ?? '');
+    if ($accion !== 'me' && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254)) {
+        responder(422, ['error' => 'Ingresá un correo electrónico válido.']);
+    }
+    if ($accion !== 'me' && (strlen($contrasena) < 8 || strlen($contrasena) > 72)) {
+        responder(422, ['error' => 'La contraseña debe tener entre 8 y 72 caracteres.']);
+    }
+
+    if ($accion === 'register') {
+        $nombre = trim((string) ($entrada['name'] ?? ''));
+        if (!preg_match('/^.{2,32}$/us', $nombre)) {
+            responder(422, ['error' => 'El nombre debe tener entre 2 y 32 caracteres.']);
         }
-        $_SESSION['user'] = publicUser($user);
-        respond(200, ['user' => $_SESSION['user']]);
-    }
 
-    $email = strtolower(trim((string) ($input['email'] ?? '')));
-    $passwordInput = (string) ($input['password'] ?? '');
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
-        respond(422, ['error' => 'Ingresá un correo electrónico válido.']);
-    }
-    if (strlen($passwordInput) < 8 || strlen($passwordInput) > 72) {
-        respond(422, ['error' => 'La contraseña debe tener entre 8 y 72 caracteres.']);
-    }
-
-    if ($action === 'register') {
-        $name = trim((string) ($input['name'] ?? ''));
-        if (!preg_match('/^.{2,32}$/us', $name)) {
-            respond(422, ['error' => 'El nombre debe tener entre 2 y 32 caracteres.']);
+        $crearVecindario = ($entrada['neighborhood_id'] ?? '') === 'create';
+        $nombreVecindario = trim((string) ($entrada['neighborhood_name'] ?? ''));
+        $idVecindario = filter_var(
+            $entrada['neighborhood_id'] ?? null,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]]
+        );
+        if ($crearVecindario && !preg_match('/^.{2,60}$/us', $nombreVecindario)) {
+            responder(422, ['error' => 'El nombre del vecindario debe tener entre 2 y 60 caracteres.']);
+        }
+        if (!$crearVecindario && $idVecindario === false) {
+            responder(422, ['error' => 'Elegí un vecindario para continuar.']);
         }
 
         $pdo->beginTransaction();
-        $neighborhoodId = null;
-        if (($input['neighborhood_id'] ?? '') === 'create') {
-            $neighborhoodName = trim((string) ($input['neighborhood_name'] ?? ''));
-            if (!preg_match('/^.{2,60}$/us', $neighborhoodName)) {
-                respond(422, ['error' => 'El nombre del vecindario debe tener entre 2 y 60 caracteres.']);
-            }
-            try {
-                $statement = $pdo->prepare('INSERT INTO neighborhoods (name) VALUES (:name)');
-                $statement->execute(['name' => $neighborhoodName]);
-                $neighborhoodId = (int) $pdo->lastInsertId();
-            } catch (PDOException $error) {
-                if ($error->getCode() === '23000') {
+        $mensajeDuplicado = 'Ya existe una cuenta con ese correo electrónico.';
+        try {
+            if ($crearVecindario) {
+                $mensajeDuplicado = 'Ya existe un vecindario con ese nombre. Elegilo de la lista.';
+                $consulta = $pdo->prepare('INSERT INTO neighborhoods (name) VALUES (:name)');
+                $consulta->execute(['name' => $nombreVecindario]);
+                $vecindario = ['id' => (int) $pdo->lastInsertId(), 'name' => $nombreVecindario];
+            } else {
+                $consulta = $pdo->prepare('SELECT id, name FROM neighborhoods WHERE id = :id');
+                $consulta->execute(['id' => $idVecindario]);
+                $vecindario = $consulta->fetch();
+                if (!$vecindario) {
                     $pdo->rollBack();
-                    respond(409, ['error' => 'Ya existe un vecindario con ese nombre. Elegilo de la lista.']);
+                    responder(422, ['error' => 'El vecindario seleccionado no existe. Actualizá la página e intentá de nuevo.']);
                 }
+            }
+
+            $consulta = $pdo->prepare(
+                'INSERT INTO users (name, email, password_hash, neighborhood_id)
+                 VALUES (:name, :email, :password_hash, :neighborhood_id)'
+            );
+            $consulta->execute([
+                'name' => $nombre,
+                'email' => $email,
+                'password_hash' => password_hash($contrasena, PASSWORD_DEFAULT),
+                'neighborhood_id' => (int) $vecindario['id'],
+            ]);
+            $pdo->commit();
+        } catch (PDOException $error) {
+            if ($error->getCode() !== '23000') {
                 throw $error;
             }
-        } else {
-            $neighborhoodId = filter_var(
-                $input['neighborhood_id'] ?? null,
-                FILTER_VALIDATE_INT,
-                ['options' => ['min_range' => 1]]
-            );
-            if ($neighborhoodId === false) {
-                respond(422, ['error' => 'Elegí un vecindario para continuar.']);
-            }
-            $statement = $pdo->prepare('SELECT id FROM neighborhoods WHERE id = :id');
-            $statement->execute(['id' => $neighborhoodId]);
-            if (!$statement->fetch()) {
-                respond(422, ['error' => 'El vecindario seleccionado no existe. Actualizá la página e intentá de nuevo.']);
-            }
+            $pdo->rollBack();
+            responder(409, ['error' => $mensajeDuplicado]);
         }
 
-        $statement = $pdo->prepare(
-            'INSERT INTO users (name, email, password_hash, neighborhood_id)
-             VALUES (:name, :email, :password_hash, :neighborhood_id)'
-        );
-        try {
-            $statement->execute([
-                'name' => $name,
-                'email' => $email,
-                'password_hash' => password_hash($passwordInput, PASSWORD_DEFAULT),
-                'neighborhood_id' => $neighborhoodId,
-            ]);
-        } catch (PDOException $error) {
-            if ($error->getCode() === '23000') {
-                $pdo->rollBack();
-                respond(409, ['error' => 'Ya existe una cuenta con ese correo electrónico.']);
-            }
-            throw $error;
-        }
-
-        $statement = $pdo->prepare('SELECT id, name FROM neighborhoods WHERE id = :id');
-        $statement->execute(['id' => $neighborhoodId]);
-        $neighborhood = $statement->fetch();
-        $pdo->commit();
-        respond(201, ['ok' => true, 'neighborhood' => $neighborhood]);
+        responder(201, ['ok' => true, 'neighborhood' => $vecindario]);
     }
 
-    $statement = $pdo->prepare(
-        'SELECT u.id, u.name, u.email, u.password_hash, u.neighborhood_id, n.name AS neighborhood_name
-         FROM users u
-         JOIN neighborhoods n ON n.id = u.neighborhood_id
-         WHERE u.email = :email'
+    $columna = $accion === 'me' ? 'u.id' : 'u.email';
+    $valor = $accion === 'me' ? (int) $_SESSION['user']['id'] : $email;
+    $campos = $accion === 'me'
+        ? 'u.id, u.name, u.email, u.neighborhood_id, n.name AS neighborhood_name'
+        : 'u.id, u.name, u.email, u.password_hash, u.neighborhood_id, n.name AS neighborhood_name';
+    $consulta = $pdo->prepare(
+        "SELECT $campos FROM users u JOIN neighborhoods n ON n.id = u.neighborhood_id WHERE $columna = :valor"
     );
-    $statement->execute(['email' => $email]);
-    $user = $statement->fetch();
-    if (!$user || !password_verify($passwordInput, $user['password_hash'])) {
-        respond(401, ['error' => 'El correo o la contraseña no son correctos.']);
+    $consulta->execute(['valor' => $valor]);
+    $user = $consulta->fetch();
+    if (!$user && $accion === 'me') {
+        $_SESSION = [];
+        responder(200, ['user' => null]);
+    }
+    if (!$user || ($accion === 'login' && !password_verify($contrasena, $user['password_hash']))) {
+        responder(401, ['error' => 'El correo o la contraseña no son correctos.']);
     }
 
-    session_regenerate_id(true);
-    $_SESSION['user'] = publicUser($user);
-    respond(200, ['user' => $_SESSION['user']]);
+    $usuarioPublico = obtenerUsuarioPublico($user);
+    if ($accion === 'login') {
+        session_regenerate_id(true);
+    }
+    $_SESSION['user'] = $usuarioPublico;
+    responder(200, ['user' => $usuarioPublico]);
 } catch (Throwable $error) {
     if ($pdo instanceof PDO && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
     error_log('EntreManos auth error: ' . $error->getMessage());
-    respond(500, ['error' => 'No se pudo completar la operación. Verificá la conexión con la base de datos.']);
+    responder(500, ['error' => 'No se pudo completar la operación. Verificá la conexión con la base de datos.']);
 }
